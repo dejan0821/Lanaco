@@ -10,7 +10,7 @@ if(isset($_POST['korisnickoIme'])) {
       echo "Email nije u ispravnom formatu";
     } else {
       $email = htmlspecialchars(strip_tags($email));
-      $email = mysqli_real_escape_string($database, $email);  
+      $email = mysqli_real_escape_string($datbas, $email);  
     }
 
     $sql_query = "SELECT `korisnicko_ime` FROM `korisnik` WHERE `korisnicko_ime` =  '$korisnickoIme'";

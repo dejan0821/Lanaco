@@ -12,7 +12,7 @@ if(isset($_POST['korisnickoIme'])) {
       
         if(password_verify($sifra, $hash)) {
             setcookie('korisnickoIme', $korisnickoIme, time() + 3600);
-            header("Location: home.php");
+            header("Location: merch_list.php");
             die();
         }
         
