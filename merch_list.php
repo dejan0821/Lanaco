@@ -1,5 +1,16 @@
 <?php
+if(isset($_COOKIE['korisnickoIme'])) {
 $datbas = new mysqli("localhost", "root", "", "lanaco");
+
+$korisnickoIme = $_COOKIE['korisnickoIme'];
+$mysql_query = "SELECT `rolaID` FROM `korisnik` WHERE `korisnicko_ime` = '$korisnickoIme'";
+$res = $datbas->query($mysql_query);
+$rola = $res->fetch_assoc()['rolaID'];
+
+} else {
+    header("Location: login.php");
+    exit();
+  }
 
 $mysql_query = "SELECT * FROM `artikl`";
 
@@ -18,16 +29,26 @@ if($res->num_rows > 0) {
     <link href="CSS/style_tab.css" rel="stylesheet">
 </head>
 <body>
+<div class="title-container">
+  <h1>Artikli</h1>
+</div>
     <div class="button-container">
-<form class="add-button" action="merch_add.php">
-    <input  type="submit" value="Dodaj" />
-</form>
-
-
+    <?php
+    if ($rola == 1) {
+    ?>
+        <form class="add-button" action="merch_add.php">
+            <input  type="submit" value="Dodaj" />
+        </form>
+    <?php
+    }
+    ?>
 <form class="add-button" action="logout.php">
     <input  type="submit" value="Logout" />
 </form>
 </div>
+
+<div class="flex-container">
+    <div class="table-container">
     <table class="artikli-table">
         <tr>
             <th>Šifra</th>
@@ -35,8 +56,13 @@ if($res->num_rows > 0) {
             <th>Jedinica mjere</th>
             <th>Bar kod</th>
             <th>PLU kod</th>
+            <?php
+            if ($rola == 1) {
+            ?>
             <th></th>
-            <th></th>
+            <?php
+            }
+            ?>
         </tr>
 
        <?php
@@ -47,14 +73,16 @@ if($res->num_rows > 0) {
             <td><?php echo $artikli['jedinica_mjere'] ?></td>
             <td><?php echo $artikli['bar_kod'] ?></td>
             <td><?php echo $artikli['plu_kod'] ?></td>
+            <?php
+            if ($rola == 1) {
+            ?>
             <td><form action='edit.php' method='post'>
-  <input type='hidden' name='id' value='<?php echo $artikli['artikl_id']; ?>'>
-  <input type='submit' value='Izmijeni'>
-</form></td>
-            <td><form action='delete.php' method='post'>
-  <input type='hidden' name='id' value='<?php echo $artikli['artikl_id']; ?>'>
-  <input type='submit' name='delete' value='Izbriši'>
-</form></td>
+            <input type='hidden' name='id' value='<?php echo $artikli['artikl_id']; ?>'>
+            <input type='submit' value='Izmijeni'>
+            </form></td>
+            <?php
+            }
+            ?>
         </tr>
         <?php
         }
@@ -67,6 +95,32 @@ if($res->num_rows > 0) {
 
 $datbas->close();
 ?>
+</div>
+
+<div class="link-container">
+<form class="form-index" action="lager.php">
+            <input type="submit" value="Lager" />
+        </form>   
+        <form class="form-index" action="racun.php">
+            <input type="submit" value="Račun" />
+        </form>
+        <form class="form-index" action="radnik.php">
+            <input  type="submit" value="Radnik" />
+        </form>
+        <?php
+            if ($rola == 1) {
+            ?>
+        <form class="form-index" action="admin.php">
+            <input  type="submit" value="Admin" />
+        </form>
+        <?php
+            }
+            ?>
+</div>
+</div>
+
+        
+
 
 </body>
 </html>

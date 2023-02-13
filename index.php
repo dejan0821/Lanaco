@@ -13,7 +13,7 @@
     </div>
 
 <div class="indeks-btns">
-        <form class="form-index" action="home.php">
+        <form class="form-index" action="merch_list.php">
             <input type="submit" value="Home" />
         </form>   
         <form class="form-index" action="login.php">

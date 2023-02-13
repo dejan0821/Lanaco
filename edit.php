@@ -1,4 +1,20 @@
 <?php
+if(isset($_COOKIE['korisnickoIme'])) {
+    $datbas = new mysqli("localhost", "root", "", "lanaco");
+
+    $korisnickoIme = $_COOKIE['korisnickoIme'];
+    $mysql_query = "SELECT `rolaID` FROM `korisnik` WHERE `korisnicko_ime` = '$korisnickoIme'";
+    $res = $datbas->query($mysql_query);
+    $rola = $res->fetch_assoc()['rolaID'];
+    if ($rola != 1) {
+        header("Location: index.php");
+        exit();
+    }
+} else {
+    header("Location: login.php");
+    exit();
+}
+
 $datbas = new mysqli("localhost", "root", "", "lanaco");
 
 $id = $_POST['id'];
@@ -72,5 +88,7 @@ $datbas->close();
 <input  type="submit" name="edit_artikl" value="Izmijeni">
 </div>
 </form>
+
+
 </body>
 </html>
