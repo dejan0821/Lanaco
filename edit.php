@@ -68,27 +68,32 @@ $datbas->close();
     <link href="CSS/style_add.css" rel="stylesheet">
 </head>
 <body>
-<h2 class="naslov">Izmijeni artikl</h2>
-<form  action="edit.php" method="post">
-<input type='hidden' name='id' value='<?php echo $artikl['artikl_id']; ?>'>
-<div class="input-storage">
- <input required type="text" name="naziv" placeholder="Naziv artikla" id="naziv" value="<?php echo $artikl['naziv_art']; ?>">
+<div class="title-container">
+  <h1>Artikli</h1>
 </div>
-<div class="input-storage">
- <input type="text" name="jedinicaMjere" placeholder="Jedinica mjere" id="jedinicaMjere" value="<?php echo $artikl['jedinica_mjere']; ?>">
-</div>
-<div class="input-storage">
- <input required type="number" name="barKod" placeholder="Bar kod" id="barKod" value="<?php echo $artikl['bar_kod']; ?>">
-
-</div>
-<div class="input-storage">
- <input required type="number" name="pluKod" placeholder="PLU kod" id="pluKod" value="<?php echo $artikl['plu_kod']; ?>">
-</div>
-<div class="add-merch">
-<input  type="submit" name="edit_artikl" value="Izmijeni">
-</div>
+<div class="button-container">
+    
+<form class="add-button" action="merch_list.php">
+    <input  type="submit" value="Nazad" />
 </form>
+</div>
 
+<div class="add-form">
+			<h1>Izmijeni artikl</h1>
+			<form action="edit.php" method="post" autocomplete="off">
+            <input type='hidden' name='id' value='<?php echo $artikl['artikl_id']; ?>'>
+				<label for="naziv"></label>
+				<input type="text" name="naziv" placeholder="Naziv artikla" id="naziv" value="<?php echo $artikl['naziv_art']; ?>">
+				<label for="jedinicaMjere"></label>
+				<input type="text" name="jedinicaMjere" placeholder="Jedinica mjere" id="jedinicaMjere" value="<?php echo $artikl['jedinica_mjere']; ?>">
+                <label for="barKod"></label>
+                <input type="number" name="barKod" placeholder="Bar kod" id="barKod" value="<?php echo $artikl['bar_kod']; ?>">
+                <label for="pluKod"></label>
+                <input type="number" name="pluKod" placeholder="PLU kod" id="pluKod" value="<?php echo $artikl['plu_kod']; ?>">
+				<label for="dodaj"></label>
+				<input type="submit" name="edit_artikl" value="Izmijeni">
 
+</form>
+</div>
 </body>
 </html>

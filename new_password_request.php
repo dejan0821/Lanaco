@@ -24,9 +24,9 @@ if(isset($_POST['email'])) {
 
     mail($to, $subject, $message, $headers);
 
-    echo "Nova šifra Vam je poslata na email adresu. Kliknite <a href='http://localhost/index.php'>ovdje</a> da se vratite na početnu stranicu.";
+    echo "Nova šifra Vam je poslana na email adresu. Kliknite <a href='http://localhost/index.php'>ovdje</a> da se vratite na početnu stranicu.";
   } else {
-    echo "Korisnik sa unetom email adresom ne postoji u bazi.";
+    echo "Korisnik sa unijetom email adresom ne postoji u bazi.";
   }
 }
 ?>

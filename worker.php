@@ -1,3 +1,4 @@
+
 <?php
 if(isset($_COOKIE['korisnickoIme'])) {
 $datbas = new mysqli("localhost", "root", "", "lanaco");
@@ -12,7 +13,7 @@ $rola = $res->fetch_assoc()['rolaID'];
     exit();
   }
 
-$mysql_query = "SELECT * FROM `artikl`";
+$mysql_query = "SELECT * FROM `radnik`";
 
 $res = $datbas->query($mysql_query);
 
@@ -25,18 +26,18 @@ if($res->num_rows > 0) {
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Merchandise</title>
-    <link href="CSS/style_tab.css" rel="stylesheet">
+    <title>Workers</title>
+    <link href="CSS/style_work.css" rel="stylesheet">
 </head>
 <body>
 <div class="title-container">
-  <h1>Artikli</h1>
+  <h1>Radnici</h1>
 </div>
     <div class="button-container">
     <?php
     if ($rola == 1) {
     ?>
-        <form class="add-button" action="merch_add.php">
+        <form class="add-button" action="worker_add.php">
             <input  type="submit" value="Dodaj" />
         </form>
     <?php
@@ -51,11 +52,15 @@ if($res->num_rows > 0) {
     <div class="table-container">
     <table class="artikli-table">
         <tr>
-            <th>Šifra</th>
-            <th>Naziv</th>
-            <th>Jedinica mjere</th>
-            <th>Bar kod</th>
-            <th>PLU kod</th>
+        <th>Prezime</th>
+            <th>Ime</th>
+
+            <th>Broj telefona</th>
+           
+            <th>Adresa</th>
+            <th>Grad</th>
+            <th>E-mail</th>
+            <th>JMBG</th>
             <?php
             if ($rola == 1) {
             ?>
@@ -73,18 +78,20 @@ if($res->num_rows > 0) {
         </tr>
 
        <?php
-       while($artikli = $res->fetch_assoc()) { ?>
+       while($radnici = $res->fetch_assoc()) { ?>
         <tr>
-            <td><?php echo $artikli['sifra_art'] = $artikli['artikl_id'] ?></td>
-            <td><?php echo $artikli['naziv_art'] ?></td>
-            <td><?php echo $artikli['jedinica_mjere'] ?></td>
-            <td><?php echo $artikli['bar_kod'] ?></td>
-            <td><?php echo $artikli['plu_kod'] ?></td>
+            <td><?php echo $radnici['prezime'] ?></td>
+            <td><?php echo $radnici['ime'] ?></td>
+            <td><?php echo $radnici['brojTelefona'] ?></td>
+            <td><?php echo $radnici['adresa'] ?></td>
+            <td><?php echo $radnici['grad'] ?></td>
+            <td><?php echo $radnici['email'] ?></td>
+            <td><?php echo $radnici['jmbg'] ?></td>
             <?php
             if ($rola == 1) {
             ?>
-            <td><form action='edit.php' method='post'>
-            <input type='hidden' name='id' value='<?php echo $artikli['artikl_id']; ?>'>
+            <td><form action='edit_worker.php' method='post'>
+            <input type='hidden' name='id' value='<?php echo $radnici['radnikID']; ?>'>
             <input type='submit' value='Izmijeni'>
             </form></td>
             <?php
@@ -93,11 +100,11 @@ if($res->num_rows > 0) {
             <?php
             if ($rola == 1) {
             ?>
-            <td><form action='delete.php' method='post'>
-  <input type='hidden' name='id' value='<?php echo $artikli['artikl_id']; ?>'>
+            <td><form action='delete_worker.php' method='post'>
+  <input type='hidden' name='id' value='<?php echo $radnici['radnikID']; ?>'>
   <input type='submit' name='delete' value='Izbriši'>
 </form></td>
-<?php
+            <?php
             }
             ?>
         </tr>
@@ -106,13 +113,13 @@ if($res->num_rows > 0) {
         ?>
     </table>
     <?php } else {
-        header("Location: no_merch.php");
-    
-}
+        header("Location: no_workers.php");
+    }
 
-$datbas->close();
-?>
-</div>
+    $datbas->close();
+    ?>
+    </div>
+    
 
 <div class="link-container">
 <form class="form-index" action="lager.php">
@@ -121,8 +128,8 @@ $datbas->close();
         <form class="form-index" action="racun.php">
             <input type="submit" value="Račun" />
         </form>
-        <form class="form-index" action="worker.php">
-            <input  type="submit" value="Radnik" />
+        <form class="form-index" action="merch_list.php">
+            <input  type="submit" value="Artikli" />
         </form>
         <?php
             if ($rola == 1) {
