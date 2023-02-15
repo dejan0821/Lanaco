@@ -12,7 +12,8 @@ $rola = $res->fetch_assoc()['rolaID'];
     exit();
   }
 
-$mysql_query = "SELECT * FROM `artikl`";
+$mysql_query = "SELECT * FROM `artikl`
+ORDER BY `naziv_art` ASC";
 
 $res = $datbas->query($mysql_query);
 
