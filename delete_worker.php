@@ -17,5 +17,5 @@ else {
 }
 
 $datbas->close();
-header("Location: merch_list.php");
+header("Location: worker.php");
 ?>

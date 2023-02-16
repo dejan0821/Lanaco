@@ -46,7 +46,13 @@ if (isset($_POST['artikl_id'])) {
       
         $artikl_id = $_POST['artikl_id'];
         $raspolozivaKolicina = $_POST['raspolozivaKolicina'];
-        $lokacija = $_POST['lokacija'];
+    if (!filter_var($raspolozivaKolicina, FILTER_VALIDATE_FLOAT)) {
+        exit();
+    } else {
+      $raspolozivaKolicina = htmlspecialchars(strip_tags($raspolozivaKolicina));
+      $raspolozivaKolicina = mysqli_real_escape_string($datbas, $raspolozivaKolicina);  
+    }
+    $lokacija = mysqli_real_escape_string($datbas, htmlspecialchars(strip_tags(trim($_POST['lokacija']))));
 
         $datbas = new mysqli("localhost", "root", "", "lanaco");
         $sql = "UPDATE `lager` SET `raspolozivaKolicina` = '$raspolozivaKolicina', `lokacija` = '$lokacija' WHERE `artikl_id` = '$artikl_id'";
