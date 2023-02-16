@@ -131,15 +131,6 @@ if($res->num_rows > 0) {
         <form class="form-index" action="merch_list.php">
             <input  type="submit" value="Artikli" />
         </form>
-        <?php
-            if ($rola == 1) {
-            ?>
-        <form class="form-index" action="admin.php">
-            <input  type="submit" value="Admin" />
-        </form>
-        <?php
-            }
-            ?>
 </div>
 </div>
 

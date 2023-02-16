@@ -125,15 +125,6 @@ $datbas->close();
         <form class="form-index" action="worker.php">
             <input  type="submit" value="Radnik" />
         </form>
-        <?php
-            if ($rola == 1) {
-            ?>
-        <form class="form-index" action="admin.php">
-            <input  type="submit" value="Admin" />
-        </form>
-        <?php
-            }
-            ?>
 </div>
 </div>
 

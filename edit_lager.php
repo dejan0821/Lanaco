@@ -16,51 +16,54 @@ if(isset($_COOKIE['korisnickoIme'])) {
 }
 
 $datbas = new mysqli("localhost", "root", "", "lanaco");
-if(isset($_POST['id'])) {
-    $lager_id = $_POST['id'];
-    $sql_query = "SELECT `lager`.`lager_id`, `artikl`.`naziv_art`, `lager`.`raspolozivaKolicina`, `lager`.`lokacija`
-    FROM `lager`
-    JOIN `artikl`
-    ON `lager`.`artikl_id` = `artikl`.`artikl_id`
-    WHERE `lager`.`lager_id` = '$lager_id'";
-    $res = $datbas->query($sql_query);
-    $lager = $res->fetch_assoc();
-  }
+$sql_query = "SELECT a.`artikl_id`, a.`naziv_art`, l.`lager_id`, l.`raspolozivaKolicina`, l.`lokacija` 
+              FROM `artikl` a 
+              LEFT JOIN `lager` l 
+              ON a.`artikl_id` = l.`artikl_id` 
+              ORDER BY a.`naziv_art` ASC";
+$res = $datbas->query($sql_query);
+$art = $res->fetch_all(MYSQLI_ASSOC);
+$datbas->close();
+
+if (isset($_POST['artikl_id'])) {
+  $artikl_id = $_POST['artikl_id'];
+  $datbas = new mysqli("localhost", "root", "", "lanaco");
+  $sql_query = "SELECT `raspolozivaKolicina`, `lokacija` FROM `lager` WHERE `artikl_id` = '$artikl_id'";
+  $res = $datbas->query($sql_query);
+  $lager = $res->fetch_assoc();
   
+} else {
+  $lager = array('raspolozivaKolicina' => '', 'lokacija' => '');
+}
 
-
-if(!isset($_COOKIE['korisnickoIme'])) {
+  
+ 
+  if(!isset($_COOKIE['korisnickoIme'])) {
     header("Location: login.php");
     exit;
-}
-else {  
+} else {
+    if(isset($_POST['edit_lager'])) {
+      
+        $artikl_id = $_POST['artikl_id'];
+        $raspolozivaKolicina = $_POST['raspolozivaKolicina'];
+        $lokacija = $_POST['lokacija'];
 
-if(isset($_POST['edit_lager'])) {
-    $lager_id = $lager['lager_id'];
-    $artikl_id =  $_POST['id'];
-    $raspolozivaKolicina = $_POST['raspolozivaKolicina'];
-    if (!filter_var($raspolozivaKolicina, FILTER_VALIDATE_FLOAT)) {
-        exit();
-    } else {
-      $raspolozivaKolicina = htmlspecialchars(strip_tags($raspolozivaKolicina));
-      $raspolozivaKolicina = mysqli_real_escape_string($datbas, $raspolozivaKolicina);  
+        $datbas = new mysqli("localhost", "root", "", "lanaco");
+        $sql = "UPDATE `lager` SET `raspolozivaKolicina` = '$raspolozivaKolicina', `lokacija` = '$lokacija' WHERE `artikl_id` = '$artikl_id'";
+        $datbas->query($sql);
+
+        if ($datbas->affected_rows > 0) {
+            header('Location: lager.php');
+            exit;
+        } else {
+            echo "Greška prilikom izmjene: " . $datbas->error;
+        }
+        $datbas->close();
     }
-    $lokacija = mysqli_real_escape_string($datbas, htmlspecialchars(strip_tags(trim($_POST['lokacija']))));
-  $sql = "UPDATE `lager` SET  `artikl_id` = '$artikl_id', `raspolozivaKolicina` = '$raspolozivaKolicina', `lokacija` = '$lokacija' WHERE `lager_id` = '$lager_id'";
-  $datbas->query($sql);
-
-  if ($datbas->query($sql) === TRUE) {
-    header('Location: lager.php');
-    exit;
-  } else {
-    echo "Greška prilikom izmjene: " . $datbas->error;
-  }
-  $datbas->close();
-
 }
-}
-
 ?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -68,7 +71,7 @@ if(isset($_POST['edit_lager'])) {
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Lager</title>
-    <link href="CSS/style_add_worker.css" rel="stylesheet">
+    <link href="CSS/style_add_lager.css" rel="stylesheet">
 </head>
 <body>
 <div class="title-container">
@@ -82,38 +85,28 @@ if(isset($_POST['edit_lager'])) {
 </div>
 
 <div class="add-form">
-			<h1>Izmijeni lager</h1>
-			<form action="edit_lager.php" method="post" autocomplete="off">
-            <input type="hidden" name="lager_id" value="<?php echo $lager['lager_id'] ?>">
-            <select name="id" id="artikl_id">
-                    <?php
-                    $datbas = new mysqli("localhost", "root", "", "lanaco");
-                    $sql_query = "SELECT `artikl_id`, `naziv_art` FROM `artikl` ORDER BY `naziv_art` ASC";
-                    $res = $datbas->query($sql_query);
-                    if($res->num_rows > 0){
-                        while ($artikl = $res->fetch_assoc()) { 
-                            $selected = '';
-          if($lager['artikl_id'] == $artikl['artikl_id']) {
-            $selected = 'selected';
-          }
-          ?>
-                        <option value="<?php echo $artikl['artikl_id'] ?>">
-                            <?php echo $artikl['naziv_art'] ?>
-                        </option>
-                    <?php
-                    }
-                    }
-                    ?>
-                    </select>
-                    
-				<label for="raspolozivaKolicina"></label>
-				<input type="text" name="raspolozivaKolicina" placeholder="Raspoloživa količina" id="raspolozivaKolicina" value="<?php echo $lager['raspolozivaKolicina']; ?>">
-                <label for="lokacija"></label>
-                <input type="text" name="lokacija" placeholder="Lokacija" id="lokacija" value="<?php echo $lager['lokacija']; ?>">
-               
-				<input type="submit" name="edit_lager" value="Izmijeni">
-
+  <h1>Izmijeni lager</h1>
+  <form action="edit_lager.php" method="post" autocomplete="off" id="edit-form">
+  <select name="artikl_id" id="artikl_id" onchange="submitForm()">
+  <option value="0">Izaberi artikl</option>
+    <?php foreach ($art as $a) : ?>
+      <?php $selected = ($lager && $a['artikl_id'] == $artikl_id) ? 'selected' : ''; ?>
+      <option value="<?php echo $a['artikl_id']; ?>" <?php echo $selected; ?>>
+        <?php echo $a['naziv_art']; ?>
+      </option>
+    <?php endforeach; ?>
+  </select>
+  <label for="raspolozivaKolicina"></label>
+  <input type="text" name="raspolozivaKolicina" placeholder="Raspoloživa količina" value="<?php echo isset($lager['raspolozivaKolicina']) ? $lager['raspolozivaKolicina'] : ''; ?>">
+  <label for="lokacija"></label>
+  <input type="text" name="lokacija" placeholder="Lokacija" value="<?php echo isset($lager['lokacija']) ? $lager['lokacija'] : ''; ?>">
+  <input type="submit" name="edit_lager" value="Izmijeni">
 </form>
 </div>
+<script>
+  function submitForm() {
+    document.getElementById("edit-form").submit();
+  }
+</script>
 </body>
 </html>

@@ -68,8 +68,14 @@ $datbas->close();
     <link href="CSS/style_add.css" rel="stylesheet">
 </head>
 <body>
-<div class="title-container">
-  <h1>Artikli</h1>
+<h2 class="naslov">Izmijeni artikl</h2>
+<form  action="edit.php" method="post">
+<input type='hidden' name='id' value='<?php echo $artikl['artikl_id']; ?>'>
+<div class="input-storage">
+ <input required type="text" name="naziv" placeholder="Naziv artikla" id="naziv" value="<?php echo $artikl['naziv_art']; ?>">
+</div>
+<div class="input-storage">
+ <input type="text" name="jedinicaMjere" placeholder="Jedinica mjere" id="jedinicaMjere" value="<?php echo $artikl['jedinica_mjere']; ?>">
 </div>
 <div class="button-container">
     
@@ -81,17 +87,16 @@ $datbas->close();
 <div class="add-form">
 			<h1>Izmijeni artikl</h1>
 			<form action="edit.php" method="post" autocomplete="off">
-            <input type='hidden' name='id' value='<?php echo $artikl['artikl_id']; ?>'>
 				<label for="naziv"></label>
-				<input type="text" name="naziv" placeholder="Naziv artikla" id="naziv" value="<?php echo $artikl['naziv_art']; ?>">
+				<input type="text" name="naziv" placeholder="Naziv artikla" id="naziv" required>
 				<label for="jedinicaMjere"></label>
-				<input type="text" name="jedinicaMjere" placeholder="Jedinica mjere" id="jedinicaMjere" value="<?php echo $artikl['jedinica_mjere']; ?>">
+				<input type="text" name="jedinicaMjere" placeholder="Jedinica mjere" id="jedinicaMjere" required>
                 <label for="barKod"></label>
-                <input type="number" name="barKod" placeholder="Bar kod" id="barKod" value="<?php echo $artikl['bar_kod']; ?>">
+                <input type="number" name="barKod" placeholder="Bar kod" id="barKod" required>
                 <label for="pluKod"></label>
-                <input type="number" name="pluKod" placeholder="PLU kod" id="pluKod" value="<?php echo $artikl['plu_kod']; ?>">
+                <input type="number" name="pluKod" placeholder="PLU kod" id="pluKod" required>
 				<label for="dodaj"></label>
-				<input type="submit" name="edit_artikl" value="Izmijeni">
+				<input type="submit" value="Izmijeni">
 
 </form>
 </div>
