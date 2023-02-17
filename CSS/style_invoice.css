@@ -1,0 +1,145 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+   
+}
+
+.title-container {
+    display: flex;
+    background-color: #751315;
+    height: 50px;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .title-container h1 {
+    color: #dee2e6;
+    letter-spacing: 5px;
+  }
+
+.flex-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+  }
+  
+  .table-container {
+    width: 85%;
+    margin: 10px;
+    
+
+  }
+  
+  .link-container {
+    width: 15%;
+    height: 310px;
+    margin: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color:#dee2e6;
+    box-shadow: 0 0 9px 0 rgba(0, 0, 0, 0.3);
+
+  }
+  
+
+.artikli-table {
+   width:100%;
+    border-collapse: collapse;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 15px;
+    margin-bottom: 50px;    
+    border: 1px solid #dee2e6;
+    box-shadow: 0 0 9px 0 rgba(0, 0, 0, 0.3);
+    
+}
+
+
+.artikli-table th {
+    padding: 12px 0 8px 3px;
+    background-color: #212529;
+    color:white;
+    text-align: left;   
+}
+
+
+.artikli-table td {
+    border-bottom: 1px solid #dee2e6;
+    padding: 9px 0 17px 3px;
+}
+
+
+.artikli-table td form input {
+    width: 80px;
+    height: 40px;
+    background-color: #751315;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer; 
+}
+
+
+.artikli-table td form input:hover {
+    background-color: #600b0e;
+    transition: background-color 0.2s;
+}
+
+.artikli-table tr:nth-child(even) {
+    background-color: #dee2e6;
+ }
+
+.naslov {
+    text-align: center;
+    color: red;
+}
+
+.button-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    background-color:#dee2e6; 
+  }
+  
+  .add-button {
+    margin-right: 10px;
+  }
+
+.add-button input[type=submit]{
+    width: 100px;
+    height: 50px;
+    background-color: #751315;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+    margin: 20px;   
+}
+
+.add-button input[type=submit]:hover {
+    background-color: #600b0e;
+    transition: background-color 0.2s;
+}
+
+.form-index input[type="submit"] {
+    width: 100px;
+    height: 50px;
+    background-color: #751315;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+    margin: 20px;
+}
+
+.form-index input[type="submit"]:hover {
+    background-color: #600b0e;
+    transition: background-color 0.2s;
+}

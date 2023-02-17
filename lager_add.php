@@ -14,7 +14,6 @@ if(isset($_COOKIE['korisnickoIme'])) {
     header("Location: login.php");
     exit();
 }
-
 ?>
 
 <!DOCTYPE html>
@@ -41,7 +40,7 @@ if(isset($_COOKIE['korisnickoIme'])) {
 			<h1>Dodaj lager</h1>
 			<form action="lager_add_request.php" method="post" autocomplete="off">
 				<label for="naziv"></label>
-                <select name="artikl_id" id="">
+                <select name="artikl_id" id="selektArt">
                     <?php
                     $datbas = new mysqli("localhost", "root", "", "lanaco");
                     $sql_query = "SELECT `artikl_id`, `naziv_art` FROM `artikl` ORDER BY `naziv_art` ASC";

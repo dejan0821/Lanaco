@@ -125,7 +125,7 @@ if($res->num_rows > 0) {
 <form class="form-index" action="lager.php">
             <input type="submit" value="Lager" />
         </form>   
-        <form class="form-index" action="racun.php">
+        <form class="form-index" action="invoice.php">
             <input type="submit" value="Račun" />
         </form>
         <form class="form-index" action="merch_list.php">
