@@ -1,45 +1,38 @@
 <?php
 if(isset($_COOKIE['korisnickoIme'])) {
-$datbas = new mysqli("localhost", "root", "", "lanaco");
-$korisnickoIme = $_COOKIE['korisnickoIme'];
-
-} else {
-    header("Location: login.php");
-    exit();
-  }
-
-  if (isset($_POST['dodaj-stavku'])) {
     $datbas = new mysqli("localhost", "root", "", "lanaco");
-    $racun_id = 1;
-    $artikl_id = $_POST['artikl_id'];
-    $kolicina = $_POST['kolicina'];
-    $cijena = $_POST['cijena'];
+    $korisnickoIme = $_COOKIE['korisnickoIme'];
+    
+    } else {
+        header("Location: login.php");
+        exit();
+      }
 
-    $sql_query = "SELECT `raspolozivaKolicina` FROM `lager` WHERE `artikl_id` = $artikl_id";
-    $res = $datbas->query($sql_query);
-    $raspoloziva = $res->fetch_assoc();
+$datbas = new mysqli("localhost", "root", "", "lanaco");
 
-if ($raspoloziva['raspolozivaKolicina'] >= $kolicina) {
-  $sql = "INSERT INTO `racunstavka`(`racun_id`, `artikl_id`, `kolicina`, `cijena`) VALUES ($racun_id, $artikl_id, $kolicina, $cijena)";
-  $datbas->query($sql);
-
-  $nova_raspoloziva = $raspoloziva['raspolozivaKolicina'] - $kolicina;
-    $update_query = "UPDATE `lager` SET `raspolozivaKolicina` = $nova_raspoloziva WHERE `artikl_id` = $artikl_id";
-    $datbas->query($update_query);
-} else {
-  echo "Nema dovoljno količine na stanju.";
+if ($datbas->connect_error) {
+    die("Konekcija nije uspjela: " . $datbas->connect_error);
 }
 
-$sql_query = "SELECT `racunstavka`.`stavka_id`, `artikl`.`naziv_art`, `racunstavka`.`kolicina`, `racunstavka`.`cijena`
-FROM `racunstavka`
-INNER JOIN `artikl` ON `racunstavka`.`artikl_id` = `artikl`.`artikl_id`
-WHERE `racunstavka`.`racun_id` = $racun_id";
+if(isset($_POST['novi-racun'])) {
+  $radnikID = $_POST['radnik'];
+  $datumRacuna = $_POST['datum'];
+  $brojRacuna = "R-" . time(); 
+  
+  $sql = "INSERT INTO racun (`radnikIDizdao`, `datumRacuna`, `brojRacuna`, `ukupniIznos`, `iznosPDV`, `iznosBezPDV`) 
+          VALUES ('$radnikID', '$datumRacuna', '$brojRacuna', '0.00', '0.00', '0.00')";
 
-$res = $datbas->query($sql_query);
-
+  if ($datbas->query($sql) === TRUE) {
+    echo "Novi račun je uspješno kreiran.";
+  } else {
+    echo "Greška: " . $sql . "<br>" . $datbas->error;
   }
+}
 
+$datbas->close();
 ?>
+
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -63,10 +56,42 @@ $res = $datbas->query($sql_query);
 
 <div class="flex-container">
 <div class="add-form">
-			<h1>Kreiraj novi račun</h1>
+			<h1>Otvori novi račun</h1>
+			<form action="invoice_new.php" method="post" autocomplete="off" id="invo-open">
+            
+            <label for="radnik"></label>
+            <select name="radnik" id="radnik">
+            <option value="0">Radnik</option>
+  <?php
+    $datbas = new mysqli("localhost", "root", "", "lanaco");
+    $sql_query = "SELECT `radnik`.`radnikID`, CONCAT(`radnik`.`ime`, ' ', `radnik`.`prezime`) as `ime_prezime` FROM `radnik`";
+    $res = $datbas->query($sql_query);
+    if($res->num_rows > 0){
+      while ($radnik = $res->fetch_assoc()) { 
+  ?>
+    <option value="<?php echo $radnik['radnikID'] ?>">
+      <?php echo $radnik['ime_prezime'] ?>
+    </option>
+  <?php
+      }
+    }
+  ?>
+</select>
+                <label for="datum"></label>
+                <input type="date" name="datum" placeholder="Datum" id="datum" required>
+               
+				<input type="submit" name ="novi-racun" value="Novi račun">
+                
+                
+
+</form>
+                </div>
+<div class="add-form">
+			<h1>Dodaj stavke računa</h1>
 			<form action="invoice_new.php" method="post" autocomplete="off">
             <label for="naziv"></label>
                 <select name="artikl_id" id="selektArt">
+                <option value="0">Izaberi artikl</option>
                     <?php
                     $datbas = new mysqli("localhost", "root", "", "lanaco");
                     $sql_query = "SELECT `artikl_id`, `naziv_art` FROM `artikl` ORDER BY `naziv_art` ASC";
@@ -86,12 +111,18 @@ $res = $datbas->query($sql_query);
                 <label for="cijena"></label>
                 <input type="number" name="cijena" placeholder="Cijena" id="cijena" required>
 				<input type="submit" name ="dodaj-stavku" value="Dodaj stavku">
-                <input type="submit" value="Poništi račun">
-                <input type="submit" value="Potvrdi račun">
+                
+                
 
 </form>
 </div>
-
+<div class="add-form">
+			<h1>Akcija</h1>
+			<form action="invoice_new.php" method="post" autocomplete="off" id="invo-open">
+            <input type="submit" value="Poništi račun">
+            <input name ="potvrdi-racun" type="submit" value="Potvrdi račun">
+                </form>
+                </div>
 <div class="table-container">
 <table class="artikli-table">
         <tr>
@@ -118,3 +149,4 @@ $res = $datbas->query($sql_query);
 
 </body>
 </html>
+
