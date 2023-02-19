@@ -30,31 +30,43 @@ if(isset($_POST['novi-racun'])) {
 }
 
 if(isset($_POST['dodaj-stavku'])) {
-    
     $racunID = $_COOKIE['racunID'];
     $artiklID = $_POST['artikl_id'];
     $kolicina = $_POST['kolicina'];
-    $cijena = $_POST['cijena'];
-    
-    $sql = "SELECT * FROM racun WHERE `racun_id` = '$racunID'";
-    $result = $datbas->query($sql);
-    if (!$result) {
-        echo "Greška: " . $sql . "<br>" . $datbas->error;
+    if (!filter_var($kolicina, FILTER_VALIDATE_FLOAT)) {
         exit();
-    }
-    elseif ($result->num_rows == 0) {
-        echo "Greška: racun s ID-om $racunID ne postoji.";
-        exit();
-    }
-    
-    $sql = "INSERT INTO racunstavka ( `racun_id`, `artikl_id`, `kolicina`, `cijena`) VALUES ( '$racunID', '$artiklID', '$kolicina', '$cijena')";
-
-    if ($datbas->query($sql) === TRUE) {
-        echo "Nova stavka računa je uspješno dodana.";
-    exit();
-        
     } else {
-        echo "Greška: " . $sql . "<br>" . $datbas->error;
+      $kolicina = htmlspecialchars(strip_tags($kolicina));
+      $kolicina = mysqli_real_escape_string($datbas, $kolicina); 
+    }
+    $cijena = $_POST['cijena'];
+    if (!filter_var($cijena, FILTER_VALIDATE_FLOAT)) {
+        exit();
+    } else {
+      $cijena = htmlspecialchars(strip_tags($cijena));
+      $cijena = mysqli_real_escape_string($datbas, $cijena);
+    }
+
+    $artikl_id = $_POST['artikl_id'];
+    $kolicina = $_POST['kolicina'];
+
+    $sql_query = "SELECT `raspolozivaKolicina` FROM `lager` WHERE `artikl_id` = $artikl_id";
+    $res = $datbas->query($sql_query);
+    $raspoloziva = $res->fetch_assoc();
+
+    if ($raspoloziva['raspolozivaKolicina'] >= $kolicina) {
+        $sql = "INSERT INTO racunstavka ( `racun_id`, `artikl_id`, `kolicina`, `cijena`) VALUES ( '$racunID', '$artiklID', '$kolicina', '$cijena')";
+        if ($datbas->query($sql) === TRUE) {
+            echo "Nova stavka računa je uspješno dodana.";
+           
+        } else {
+            echo "Greška: " . $sql . "<br>" . $datbas->error;
+        }
+        $nova_raspoloziva = $raspoloziva['raspolozivaKolicina'] - $kolicina;
+        $update_query = "UPDATE `lager` SET `raspolozivaKolicina` = $nova_raspoloziva WHERE `artikl_id` = $artikl_id";
+        $datbas->query($update_query);
+    } else {
+        echo "Nema dovoljno količine na stanju. Odaberite drugi artikl.";
     }
 }
 
@@ -137,7 +149,7 @@ $datbas->close();
                 <label for="kolicina"></label>
                 <input type="text" name="kolicina" placeholder="Količina" id="kolicina" required>
                 <label for="cijena"></label>
-                <input type="number" name="cijena" placeholder="Cijena" id="cijena" required>
+                <input type="number" step="0.01" name="cijena" placeholder="Cijena" id="cijena" required>
 				<input type="submit" name ="dodaj-stavku" value="Dodaj stavku">
                 
                 
@@ -197,7 +209,7 @@ function dodajStavku() {
 }
 
 document.querySelector('input[name="dodaj-stavku"]').addEventListener('click', function(event) {
-    event.preventDefault();  
+  /*  event.preventDefault();  */
     dodajStavku();
 });
 </script>
