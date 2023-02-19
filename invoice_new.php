@@ -158,9 +158,13 @@ $datbas->close();
 </div>
 <div class="add-form">
 			<h1>Akcija</h1>
-			<form action="invoice_new.php" method="post" autocomplete="off" id="invo-open">
+			<form>
+                <form>
             <input type="submit" value="Poništi račun">
+                </form>
+                <form action="invoice_new_check.php" method="post" autocomplete="off" id="invoice_check">
             <input name ="potvrdi-racun" type="submit" value="Potvrdi račun">
+                </form>
                 </form>
                 </div>
 <div class="table-container">
