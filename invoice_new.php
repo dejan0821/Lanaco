@@ -3,12 +3,10 @@ if(isset($_COOKIE['korisnickoIme'])) {
     $datbas = new mysqli("localhost", "root", "", "lanaco");
     $korisnickoIme = $_COOKIE['korisnickoIme'];
     
-    } else {
-        header("Location: login.php");
-        exit();
-      }
-
-$datbas = new mysqli("localhost", "root", "", "lanaco");
+} else {
+    header("Location: login.php");
+    exit();
+}
 
 if ($datbas->connect_error) {
     die("Konekcija nije uspjela: " . $datbas->connect_error);
@@ -19,14 +17,46 @@ if(isset($_POST['novi-racun'])) {
   $datumRacuna = $_POST['datum'];
   $brojRacuna = "R-" . time(); 
   
-  $sql = "INSERT INTO racun (`radnikIDizdao`, `datumRacuna`, `brojRacuna`, `ukupniIznos`, `iznosPDV`, `iznosBezPDV`) 
+  $sql = "INSERT INTO `racun` (`radnikIDizdao`, `datumRacuna`, `brojRacuna`, `ukupniIznos`, `iznosPDV`, `iznosBezPDV`) 
           VALUES ('$radnikID', '$datumRacuna', '$brojRacuna', '0.00', '0.00', '0.00')";
 
   if ($datbas->query($sql) === TRUE) {
+    $racunID = $datbas->insert_id;
+    setcookie("racunID", $racunID, time() + 3600); // postavljanje cookiea
     echo "Novi račun je uspješno kreiran.";
   } else {
     echo "Greška: " . $sql . "<br>" . $datbas->error;
   }
+}
+
+if(isset($_POST['dodaj-stavku'])) {
+    // čitanje cookiea
+    $racunID = $_COOKIE['racunID'];
+    $artiklID = $_POST['artikl_id'];
+    $kolicina = $_POST['kolicina'];
+    $cijena = $_POST['cijena'];
+    
+    // dodajemo provjeru postoji li racun s odgovarajucim ID-om u tablici racun
+   
+    $sql = "SELECT * FROM racun WHERE `racun_id` = '$racunID'";
+    $result = $datbas->query($sql);
+    if (!$result) {
+        echo "Greška: " . $sql . "<br>" . $datbas->error;
+        exit();
+    }
+    elseif ($result->num_rows == 0) {
+        echo "Greška: racun s ID-om $racunID ne postoji.";
+        exit();
+    }
+    
+    // nastavljamo s dodavanjem stavke racuna
+    $sql = "INSERT INTO racunstavka ( `racun_id`, `artikl_id`, `kolicina`, `cijena`) VALUES ( '$racunID', '$artiklID', '$kolicina', '$cijena')";
+
+    if ($datbas->query($sql) === TRUE) {
+        echo "Nova stavka računa je uspješno dodana.";
+    } else {
+        echo "Greška: " . $sql . "<br>" . $datbas->error;
+    }
 }
 
 $datbas->close();
@@ -57,7 +87,7 @@ $datbas->close();
 <div class="flex-container">
 <div class="add-form">
 			<h1>Otvori novi račun</h1>
-			<form action="invoice_new.php" method="post" autocomplete="off" id="invo-open">
+			<form action="invoice_new.php" method="post" autocomplete="off" >
             
             <label for="radnik"></label>
             <select name="radnik" id="radnik">
@@ -79,7 +109,8 @@ $datbas->close();
 </select>
                 <label for="datum"></label>
                 <input type="date" name="datum" placeholder="Datum" id="datum" required>
-               
+                <label for="brojRacuna"></label>
+                <input type="text" name="brojRacuna" placeholder="Broj računa" id="brojRacuna" >
 				<input type="submit" name ="novi-racun" value="Novi račun">
                 
                 
@@ -149,4 +180,8 @@ $datbas->close();
 
 </body>
 </html>
+
+
+
+
 
