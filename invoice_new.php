@@ -22,7 +22,7 @@ if(isset($_POST['novi-racun'])) {
 
   if ($datbas->query($sql) === TRUE) {
     $racunID = $datbas->insert_id;
-    setcookie("racunID", $racunID, time() + 3600); // postavljanje cookiea
+    setcookie("racunID", $racunID, 0); 
     echo "Novi račun je uspješno kreiran.";
   } else {
     echo "Greška: " . $sql . "<br>" . $datbas->error;
@@ -30,14 +30,12 @@ if(isset($_POST['novi-racun'])) {
 }
 
 if(isset($_POST['dodaj-stavku'])) {
-    // čitanje cookiea
+    
     $racunID = $_COOKIE['racunID'];
     $artiklID = $_POST['artikl_id'];
     $kolicina = $_POST['kolicina'];
     $cijena = $_POST['cijena'];
     
-    // dodajemo provjeru postoji li racun s odgovarajucim ID-om u tablici racun
-   
     $sql = "SELECT * FROM racun WHERE `racun_id` = '$racunID'";
     $result = $datbas->query($sql);
     if (!$result) {
@@ -49,11 +47,12 @@ if(isset($_POST['dodaj-stavku'])) {
         exit();
     }
     
-    // nastavljamo s dodavanjem stavke racuna
     $sql = "INSERT INTO racunstavka ( `racun_id`, `artikl_id`, `kolicina`, `cijena`) VALUES ( '$racunID', '$artiklID', '$kolicina', '$cijena')";
 
     if ($datbas->query($sql) === TRUE) {
         echo "Nova stavka računa je uspješno dodana.";
+    exit();
+        
     } else {
         echo "Greška: " . $sql . "<br>" . $datbas->error;
     }
@@ -113,9 +112,7 @@ $datbas->close();
                 <input type="text" name="brojRacuna" placeholder="Broj računa" id="brojRacuna" >
 				<input type="submit" name ="novi-racun" value="Novi račun">
                 
-                
-
-</form>
+                </form>
                 </div>
 <div class="add-form">
 			<h1>Dodaj stavke računa</h1>
@@ -156,28 +153,54 @@ $datbas->close();
                 </div>
 <div class="table-container">
 <table class="artikli-table">
-        <tr>
-            <th>Stavka</th>
-            <th>Artikl</th>
-            <th>Količina</th>
-            <th>Cijena</th>
-        </tr>
-
-       <?php
-       while($i = $res->fetch_assoc()) { ?>
-        <tr>
-            <td><?php echo $i['stavka_id'] ?></td>
-            <td><?php echo $i['naziv_art'] ?></td>
-            <td><?php echo $i['kolicina'] ?></td>
-            <td><?php echo $i['cijena'] ?></td>
-        </tr>
-        <?php
-        }
-        ?>
+        <thead>
+            <tr>
+                <th>Stavka</th>
+                <th>Artikl</th>
+                <th>Količina</th>
+                <th>Cijena</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php
+            $rowCount = 1;
+            while ($i = $res->fetch_assoc()) { ?>
+                <tr>
+                    <td><?php echo $rowCount; ?></td>
+                    <td><?php echo $i['naziv_art'] ?></td>
+                    <td><?php echo $i['kolicina'] ?></td>
+                    <td><?php echo $i['cijena'] ?></td>
+                </tr>
+                <?php
+                
+            }
+            ?>
+        </tbody>
     </table>
 </div>
 </div>
+<script>
+function dodajStavku() {
+    var table = document.querySelector('.artikli-table');
+    var row = table.insertRow();
+    var cell1 = row.insertCell();
+    var cell2 = row.insertCell();
+    var cell3 = row.insertCell();
+    var cell4 = row.insertCell();
+    let rowCount = table.rows.length;  
+    cell1.innerHTML = rowCount.toString();
+    cell2.innerHTML = document.getElementById('selektArt').value;
+    cell3.innerHTML = document.getElementById('kolicina').value;
+    cell4.innerHTML = document.getElementById('cijena').value;
 
+    document.querySelector('form').reset();
+}
+
+document.querySelector('input[name="dodaj-stavku"]').addEventListener('click', function(event) {
+    event.preventDefault();  
+    dodajStavku();
+});
+</script>
 </body>
 </html>
 
