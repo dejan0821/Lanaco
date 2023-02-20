@@ -23,7 +23,7 @@ $id = $_POST['id'];
 
 $sql = "SELECT * FROM `artikl` WHERE `artikl_id` = '$id'";
 $res = $datbas->query($sql);
-$artikl = $res->fetch_assoc();  // Varijabla za vrijednost koja se mijenja
+$artikl = $res->fetch_assoc();  
 
 if(!isset($_COOKIE['korisnickoIme'])) {
     header("Location: login.php");

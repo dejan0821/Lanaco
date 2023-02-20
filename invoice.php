@@ -16,7 +16,7 @@ CONCAT(`radnik`.`ime`, ' ', `radnik`.`prezime`) as ime_prezime
 FROM `racun`
 JOIN `radnik`
 ON `racun`.`radnikIDizdao` = `radnik`.`radnikID`
-ORDER BY `brojRacuna` ASC";
+ORDER BY `racun_id` DESC";
 
 $res = $datbas->query($mysql_query);
 
@@ -53,6 +53,7 @@ if($res->num_rows > 0) {
     <div class="table-container">
     <table class="artikli-table">
         <tr>
+            <th>Redni broj</th>
             <th>Račun ID</th>
             <th>Broj računa</th>
             <th>Datum kreiranja</th>
@@ -61,8 +62,10 @@ if($res->num_rows > 0) {
         </tr>
 
        <?php
+       $rb = 1;
        while($invoice = $res->fetch_assoc()) { ?>
         <tr>
+            <td><?php echo $rb++ ?></td>
             <td><?php echo $invoice['racun_id'] ?></td>
             <td><?php echo $invoice['brojRacuna'] ?></td>
             <td><?php echo $invoice['datumRacuna'] ?></td>
@@ -95,6 +98,17 @@ if($res->num_rows > 0) {
         
 </div>
 </div>
-
+<script>
+    function showInvoiceDetails(invoiceId) {
+    window.location.href = 'invoice_details.php?invoiceId=' + invoiceId;
+}
+    var rows = document.querySelectorAll('.artikli-table tr');
+    rows.forEach(function(row) {
+    row.addEventListener('dblclick', function() {
+    var invoiceId = this.querySelector('td:nth-child(2)').textContent;
+        showInvoiceDetails(invoiceId);
+    });
+});
+    </script>
 </body>
 </html>

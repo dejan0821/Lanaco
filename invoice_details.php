@@ -1,8 +1,7 @@
 <?php
-if(isset($_COOKIE['racunID'])) {
+if(isset($_GET['invoiceId'])) {
     $datbas = new mysqli("localhost", "root", "", "lanaco");
-    $racunID = $_COOKIE['racunID'];
-    
+    $invoiceId = $_GET['invoiceId'];
 } else {
     header("Location: invoice.php");
     exit();
@@ -13,12 +12,13 @@ $sql = "SELECT `racun`.`datumRacuna`, `racun`.`brojRacuna`, `racun`.`ukupniIznos
         JOIN `radnik` ON `racun`.`radnikIDizdao` = `radnik`.`radnikID`
         JOIN `racunstavka` ON `racun`.`racun_id` = `racunstavka`.`racun_id`
         JOIN `artikl` ON `racunstavka`.`artikl_id` = `artikl`.`artikl_id`
-        WHERE `racun`.`racun_id` = $racunID";
-$rez = $datbas->query($sql);
-$row = $rez->fetch_assoc();
+        WHERE `racun`.`racun_id` = $invoiceId";
+        
+        $rez = $datbas->query($sql);
+
+if ($rez->num_rows > 0) {
+    while ($row = $rez->fetch_assoc()) {
 ?>
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -30,22 +30,17 @@ $row = $rez->fetch_assoc();
 </head>
 <body>
 <div class="title-container">
-<h1>Račun <?php echo $row['brojRacuna']; ?></h1>
+<h1>Račun <?php  echo $row['brojRacuna']; ?></h1>
 </div>
     <div class="button-container">
     <div class="left-side">
     <div class="left-side-inner">
-        <form class="add-button" action="invoice_new.php">
-            <input  type="submit" value="Novi račun" />
-        </form>
-        <form class="add-button" action="invoice.php">
-            <input  type="submit" value="Računi" />
-        </form>
+        
     </div>
 </div>
     <div class="right-side">
-<form class="add-button" action="logout.php">
-    <input  type="submit" value="Logout" />
+<form class="add-button" action="invoice.php">
+    <input  type="submit" value="Nazad" />
 </form>
 </div>
 </div>
@@ -97,4 +92,9 @@ $row = $rez->fetch_assoc();
 </div>
 
 </body>
+    
 </html>
+<?php
+    }
+}
+?>

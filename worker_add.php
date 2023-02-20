@@ -1,4 +1,5 @@
 <?php
+echo "Radniku dodati istu e-mail adresu koja je upotrijebljena prilikom registracije korisnika!!!";
 if(isset($_COOKIE['korisnickoIme'])) {
     $datbas = new mysqli("localhost", "root", "", "lanaco");
 

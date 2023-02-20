@@ -43,7 +43,7 @@ if($res->num_rows > 0) {
     if ($rola == 1) {
     ?>
         <form class="add-button" action="lager_add.php">
-            <input  type="submit" value="Dodaj" />
+            <input  type="submit" value="Novi lager" />
         </form>
     <?php
     }
@@ -52,7 +52,7 @@ if($res->num_rows > 0) {
     if ($rola == 1) {
     ?>
         <form class="add-button" action="edit_lager.php">
-            <input  type="submit" value="Izmijeni" />
+            <input  type="submit" value="Nove količine" />
         </form>
     <?php
     }

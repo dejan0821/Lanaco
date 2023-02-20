@@ -8,10 +8,6 @@ if(isset($_COOKIE['korisnickoIme'])) {
     exit();
 }
 
-if ($datbas->connect_error) {
-    die("Konekcija nije uspjela: " . $datbas->connect_error);
-}
-
 if(isset($_POST['novi-racun'])) {
   $radnikID = $_POST['radnik'];
   $datumRacuna = $_POST['datum'];
@@ -58,7 +54,14 @@ if(isset($_POST['dodaj-stavku'])) {
         $sql = "INSERT INTO racunstavka ( `racun_id`, `artikl_id`, `kolicina`, `cijena`) VALUES ( '$racunID', '$artiklID', '$kolicina', '$cijena')";
         if ($datbas->query($sql) === TRUE) {
             echo "Nova stavka računa je uspješno dodana.";
-           
+            $sql = "SELECT SUM(kolicina * cijena) AS ukupno FROM racunstavka WHERE racun_id = $racunID";
+            $res = $datbas->query($sql);
+            $row = $res->fetch_assoc();
+            $ukupno = $row['ukupno'];
+            $iznosPDV = $ukupno * 0.17;
+            $iznosBezPDV = $ukupno - $iznosPDV;
+            $update_query = "UPDATE `racun` SET `ukupniIznos` = '$ukupno', `iznosPDV` = '$iznosPDV', `iznosBezPDV` = '$iznosBezPDV' WHERE `racun_id` = $racunID";
+            $datbas->query($update_query);
         } else {
             echo "Greška: " . $sql . "<br>" . $datbas->error;
         }
@@ -71,7 +74,31 @@ if(isset($_POST['dodaj-stavku'])) {
 }
 
 $datbas->close();
+
+ if(isset($_POST['invoice_delete'])) {  
+
+    $datbas = new mysqli("localhost", "root", "", "lanaco");
+    
+    $racunID = $_COOKIE['racunID'];
+
+
+    $sql = "DELETE FROM `racunstavka` WHERE `racun_id` = $racunID";
+    if ($datbas->query($sql) === TRUE) {
+        $sql = "DELETE FROM `racun` WHERE `racun_id` = $racunID";
+        if ($datbas->query($sql) === TRUE) {
+            echo "Račun je uspješno poništen.";
+            unset($_COOKIE['racunID']);
+        } else {
+            echo "Greška: " . $sql . "<br>" . $datbas->error;
+        }
+    } else {
+        echo "Greška: " . $sql . "<br>" . $datbas->error;
+    }
+    $datbas->close();
+    
+}
 ?>
+
 
 
 
@@ -121,7 +148,7 @@ $datbas->close();
                 <label for="datum"></label>
                 <input type="date" name="datum" placeholder="Datum" id="datum" required>
                 <label for="brojRacuna"></label>
-                <input type="text" name="brojRacuna" placeholder="Broj računa" id="brojRacuna" >
+                <input type="text" name="brojRacuna" placeholder="Broj računa" id="brojRacuna" readonly>
 				<input type="submit" name ="novi-racun" value="Novi račun">
                 
                 </form>
@@ -158,16 +185,18 @@ $datbas->close();
 </div>
 <div class="add-form">
 			<h1>Akcija</h1>
-			<form>
-                <form>
-            <input type="submit" value="Poništi račun">
+			
+                <form action="invoice_new.php" method="post" id="invoice_del">
+            <input type="submit" name="invoice_delete" value="Poništi račun">
                 </form>
                 <form action="invoice_new_check.php" method="post" autocomplete="off" id="invoice_check">
             <input name ="potvrdi-racun" type="submit" value="Potvrdi račun">
                 </form>
-                </form>
+                
                 </div>
+
 <div class="table-container">
+
 <table class="artikli-table">
         <thead>
             <tr>
@@ -179,10 +208,10 @@ $datbas->close();
         </thead>
         <tbody>
             <?php
-            $rowCount = 1;
+            $rb = 1;
             while ($i = $res->fetch_assoc()) { ?>
                 <tr>
-                    <td><?php echo $rowCount; ?></td>
+                    <td><?php echo $rb++; ?></td>
                     <td><?php echo $i['naziv_art'] ?></td>
                     <td><?php echo $i['kolicina'] ?></td>
                     <td><?php echo $i['cijena'] ?></td>
